@@ -33,7 +33,7 @@ class Adam_dlr(optimizers.Optimizer):
            https://openreview.net/forum?id=ryQu7f-RZ)
     """
 
-    def __init__(self, split_l, lr=[0.0001, 0.001, 0.01], beta_1=0.9, beta_2=0.999,
+    def __init__(self, split_l, lr=[0.001, 0.01], beta_1=0.9, beta_2=0.999,
                  epsilon=None, decay=0., amsgrad=False, **kwargs):
         super(Adam_dlr, self).__init__(**kwargs)
         with K.name_scope(self.__class__.__name__):
