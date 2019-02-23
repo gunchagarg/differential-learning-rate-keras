@@ -44,7 +44,7 @@ class Adam_dlr(optimizers.Optimizer):
             self.decay = K.variable(decay, name='decay')
             # Extracting name of the split layers
             if len(split_l) == 1:
-                self.split_l = split_l[0].weights[0].name
+                self.split_1 = split_l[0].weights[0].name
             elif len(split_l) == 2:
                 self.split_1 = split_l[0].weights[0].name
                 self.split_2 = split_l[1].weights[0].name
@@ -81,7 +81,7 @@ class Adam_dlr(optimizers.Optimizer):
         for p, g, m, v, vhat in zip(params, grads, ms, vs, vhats):
             
             # Updating lr when the split layer is encountered
-            if p.name == self.split_l:
+            if p.name == self.split_1:
                 lr_grp = lr_t[1]
             if len(lr_t) == 3:
                 if p.name == self.split_2:
