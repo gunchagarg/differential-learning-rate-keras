@@ -16,7 +16,8 @@ class Adam_dlr(optimizers.Optimizer):
     """Adam optimizer.
     Default parameters follow those provided in the original paper.
     # Arguments
-        split_l: List of split layer (len(split_l) = 1 or 2) 
+        split_1: split layer 1
+        split_2: split layer 2
         lr: float >= 0. List of Learning rates. [Early layers, Middle layers, Final Layers]
         beta_1: float, 0 < beta < 1. Generally close to 1.
         beta_2: float, 0 < beta < 1. Generally close to 1.
@@ -33,7 +34,7 @@ class Adam_dlr(optimizers.Optimizer):
            https://openreview.net/forum?id=ryQu7f-RZ)
     """
 
-    def __init__(self, split_l, lr=[0.001, 0.01], beta_1=0.9, beta_2=0.999,
+    def __init__(self, split_1, split_2, lr=[1e-7, 1e-4, 1e-2], beta_1=0.9, beta_2=0.999,
                  epsilon=None, decay=0., amsgrad=False, **kwargs):
         super(Adam_dlr, self).__init__(**kwargs)
         with K.name_scope(self.__class__.__name__):
@@ -43,11 +44,8 @@ class Adam_dlr(optimizers.Optimizer):
             self.beta_2 = K.variable(beta_2, name='beta_2')
             self.decay = K.variable(decay, name='decay')
             # Extracting name of the split layers
-            if len(split_l) == 1:
-                self.split_1 = split_l[0].weights[0].name
-            elif len(split_l) == 2:
-                self.split_1 = split_l[0].weights[0].name
-                self.split_2 = split_l[1].weights[0].name
+            self.split_1 = split_1.weights[0].name
+            self.split_2 = split_2.weights[0].name
         if epsilon is None:
             epsilon = K.epsilon()
         self.epsilon = epsilon
@@ -83,9 +81,8 @@ class Adam_dlr(optimizers.Optimizer):
             # Updating lr when the split layer is encountered
             if p.name == self.split_1:
                 lr_grp = lr_t[1]
-            if len(lr_t) == 3:
-                if p.name == self.split_2:
-                    lr_grp = lr_t[2]
+            if p.name == self.split_2:
+                lr_grp = lr_t[2]
                 
             m_t = (self.beta_1 * m) + (1. - self.beta_1) * g
             v_t = (self.beta_2 * v) + (1. - self.beta_2) * K.square(g)
